@@ -26,6 +26,10 @@ func main() {
 			Name:  "Federico Aguirre",
 			Email: "federico.aguirre@gmail.com",
 		},
+		{
+			Name:  "Facundo Díaz Cobos",
+			Email: "facundo.diaz.cobos@gmail.com",
+		},
 	}
 	app.Action = run
 	app.Version = Version
