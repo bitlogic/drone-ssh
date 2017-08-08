@@ -50,6 +50,14 @@ func (p Plugin) log(host string, message ...interface{}) {
 	}
 }
 
+func (p Plugin) err(host string, message ...interface{}) {
+	if count := len(p.Config.Host); count == 1 {
+		fmt.Fprintf(os.Stderr, "%s", fmt.Sprintln(message...))
+	} else {
+		fmt.Fprintf(os.Stderr, "%s: %s", host, fmt.Sprintln(message...))
+	}
+}
+
 // Exec executes the plugin.
 func (p Plugin) Exec() error {
 	if len(p.Config.Host) == 0 && len(p.Config.UserName) == 0 {
@@ -122,9 +130,9 @@ func (p Plugin) Exec() error {
 					case isTimeout = <-doneChan:
 						break loop
 					case outline := <-stdoutChan:
-						p.log(host, "out:", outline)
+						p.log(host, outline)
 					case errline := <-stderrChan:
-						p.log(host, "err:", errline)
+						p.err(host, errline)
 					case err = <-errChan:
 					}
 				}
@@ -153,7 +161,7 @@ func (p Plugin) Exec() error {
 	case <-finished:
 	case err := <-errChannel:
 		if err != nil {
-			fmt.Println("drone-ssh error: ", err)
+			fmt.Println("gitlab-ssh error: ", err)
 			return err
 		}
 	}

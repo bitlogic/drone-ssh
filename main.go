@@ -14,13 +14,17 @@ var Version = "v1.1.0-dev"
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "Drone SSH"
+	app.Name = "Gitlab SSH"
 	app.Usage = "Executing remote ssh commands"
-	app.Copyright = "Copyright (c) 2017 Bo-Yi Wu"
+	app.Copyright = "Copyright (c) 2017 bitlogic.io"
 	app.Authors = []cli.Author{
 		{
 			Name:  "Bo-Yi Wu",
 			Email: "appleboy.tw@gmail.com",
+		},
+		{
+			Name:  "Federico Aguirre",
+			Email: "federico.aguirre@gmail.com",
 		},
 	}
 	app.Action = run
@@ -29,50 +33,45 @@ func main() {
 		cli.StringFlag{
 			Name:   "ssh-key",
 			Usage:  "private ssh key",
-			EnvVar: "PLUGIN_SSH_KEY,PLUGIN_KEY,SSH_KEY",
+			EnvVar: "SSH_KEY",
 		},
 		cli.StringFlag{
 			Name:   "key-path,i",
 			Usage:  "ssh private key path",
-			EnvVar: "PLUGIN_KEY_PATH,SSH_KEY_PATH",
+			EnvVar: "SSH_KEY_PATH",
 		},
 		cli.StringFlag{
 			Name:   "username,user,u",
 			Usage:  "connect as user",
-			EnvVar: "PLUGIN_USERNAME,PLUGIN_USER,SSH_USERNAME",
+			EnvVar: "SSH_USERNAME",
 			Value:  "root",
 		},
 		cli.StringFlag{
 			Name:   "password,P",
 			Usage:  "user password",
-			EnvVar: "PLUGIN_PASSWORD,SSH_PASSWORD",
+			EnvVar: "SSH_PASSWORD",
 		},
 		cli.StringSliceFlag{
 			Name:   "host,H",
 			Usage:  "connect to host",
-			EnvVar: "PLUGIN_HOST,SSH_HOST",
+			EnvVar: "SSH_HOST",
 		},
 		cli.IntFlag{
 			Name:   "port,p",
 			Usage:  "connect to port",
-			EnvVar: "PLUGIN_PORT,SSH_PORT",
+			EnvVar: "SSH_PORT",
 			Value:  22,
 		},
 		cli.DurationFlag{
 			Name:   "timeout,t",
 			Usage:  "connection timeout",
-			EnvVar: "PLUGIN_TIMEOUT,SSH_TIMEOUT",
+			EnvVar: "SSH_TIMEOUT",
 		},
 		cli.IntFlag{
 			Name:   "command.timeout,T",
 			Usage:  "command timeout",
-			EnvVar: "PLUGIN_COMMAND_TIMEOUT,SSH_COMMAND_TIMEOUT",
+			EnvVar: "SSH_COMMAND_TIMEOUT",
 			Value:  60,
-		},
-		cli.StringSliceFlag{
-			Name:   "script,s",
-			Usage:  "execute commands",
-			EnvVar: "PLUGIN_SCRIPT,SSH_SCRIPT",
 		},
 		cli.StringFlag{
 			Name:  "env-file",
@@ -81,39 +80,39 @@ func main() {
 		cli.StringFlag{
 			Name:   "proxy.ssh-key",
 			Usage:  "private ssh key of proxy",
-			EnvVar: "PLUGIN_PROXY_SSH_KEY,PLUGIN_PROXY_KEY,PROXY_SSH_KEY",
+			EnvVar: "PROXY_SSH_KEY",
 		},
 		cli.StringFlag{
 			Name:   "proxy.key-path",
 			Usage:  "ssh private key path of proxy",
-			EnvVar: "PLUGIN_PROXY_KEY_PATH,PROXY_SSH_KEY_PATH",
+			EnvVar: "PROXY_SSH_KEY_PATH",
 		},
 		cli.StringFlag{
 			Name:   "proxy.username",
 			Usage:  "connect as user of proxy",
-			EnvVar: "PLUGIN_PROXY_USERNAME,PLUGIN_PROXY_USER,PROXY_SSH_USERNAME",
+			EnvVar: "PROXY_SSH_USERNAME",
 			Value:  "root",
 		},
 		cli.StringFlag{
 			Name:   "proxy.password",
 			Usage:  "user password of proxy",
-			EnvVar: "PLUGIN_PROXY_PASSWORD,PROXY_SSH_PASSWORD",
+			EnvVar: "PROXY_SSH_PASSWORD",
 		},
 		cli.StringFlag{
 			Name:   "proxy.host",
 			Usage:  "connect to host of proxy",
-			EnvVar: "PLUGIN_PROXY_HOST,PROXY_SSH_HOST",
+			EnvVar: "PROXY_SSH_HOST",
 		},
 		cli.StringFlag{
 			Name:   "proxy.port",
 			Usage:  "connect to port of proxy",
-			EnvVar: "PLUGIN_PROXY_PORT,PROXY_SSH_PORT",
+			EnvVar: "PROXY_SSH_PORT",
 			Value:  "22",
 		},
 		cli.DurationFlag{
 			Name:   "proxy.timeout",
 			Usage:  "proxy connection timeout",
-			EnvVar: "PLUGIN_PROXY_TIMEOUT,PROXY_SSH_TIMEOUT",
+			EnvVar: "PROXY_SSH_TIMEOUT",
 		},
 		cli.StringSliceFlag{
 			Name:   "secrets",
@@ -134,12 +133,12 @@ func main() {
 
 	// Override a template
 	cli.AppHelpTemplate = `
-________                                         _________ _________ ___ ___
-\______ \_______  ____   ____   ____            /   _____//   _____//   |   \
- |    |  \_  __ \/  _ \ /    \_/ __ \   ______  \_____  \ \_____  \/    ~    \
- |    |   \  | \(  <_> )   |  \  ___/  /_____/  /        \/        \    Y    /
-/_______  /__|   \____/|___|  /\___  >         /_______  /_______  /\___|_  /
-        \/                  \/     \/                  \/        \/       \/
+  ________.__  __  .__        ___.               _________ _________ ___ ___  
+ /  _____/|__|/  |_|  | _____ \_ |__            /   _____//   _____//   |   \ 
+/   \  ___|  \   __\  | \__  \ | __ \   ______  \_____  \ \_____  \/    ~    \
+\    \_\  \  ||  | |  |__/ __ \| \_\ \ /_____/  /        \/        \    Y    /
+ \______  /__||__| |____(____  /___  /         /_______  /_______  /\___|_  / 
+        \/                   \/    \/                  \/        \/       \/
                                                     version: {{.Version}}
 NAME:
    {{.Name}} - {{.Usage}}
@@ -162,7 +161,7 @@ VERSION:
    {{.Version}}
    {{end}}
 REPOSITORY:
-    Github: https://github.com/appleboy/drone-ssh
+    Github: https://github.com/appleboy/bitlogic/gitlab-ssh
 `
 
 	app.Run(os.Args)
@@ -172,7 +171,9 @@ func run(c *cli.Context) error {
 	if c.String("env-file") != "" {
 		_ = godotenv.Load(c.String("env-file"))
 	}
-
+	if len(c.Args()) == 0 {
+		return nil
+	}
 	plugin := Plugin{
 		Config: Config{
 			Key:            c.String("ssh-key"),
@@ -183,7 +184,7 @@ func run(c *cli.Context) error {
 			Port:           c.Int("port"),
 			Timeout:        c.Duration("timeout"),
 			CommandTimeout: c.Int("command.timeout"),
-			Script:         c.StringSlice("script"),
+			Script:         c.Args(),
 			Secrets:        c.StringSlice("secrets"),
 			Envs:           c.StringSlice("envs"),
 			Debug:          c.Bool("debug"),

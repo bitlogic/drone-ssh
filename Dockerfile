@@ -6,5 +6,5 @@ RUN apk update && \
     openssh-client && \
   rm -rf /var/cache/apk/*
 
-ADD drone-ssh /bin/
-ENTRYPOINT ["/bin/drone-ssh"]
+ADD gitlab-ssh /bin/
+ENTRYPOINT ["/bin/gitlab-ssh"]
