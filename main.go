@@ -75,7 +75,7 @@ func main() {
 			Name:   "command.timeout,T",
 			Usage:  "command timeout",
 			EnvVar: "SSH_COMMAND_TIMEOUT",
-			Value:  60,
+			Value:  600,
 		},
 		cli.StringFlag{
 			Name:  "env-file",

@@ -7,4 +7,3 @@ RUN apk update && \
   rm -rf /var/cache/apk/*
 
 ADD gitlab-ssh /bin/
-
