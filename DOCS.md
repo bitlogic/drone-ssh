@@ -18,9 +18,9 @@ pipeline:
   image: bitlogicos/gitlab-ssh
   stage: deploy
   variables:
-    PLUGIN_HOST: "foo.com"
-    PLUGIN_USERNAME: "root"
-    PLUGIN_KEY: ${SSH_PRIVATE_KEY}
+    SSH_HOST: "foo.com"
+    SSH_USERNAME: "root"
+    SSH_KEY: ${SSH_PRIVATE_KEY}
   script:
     - echo Hello
     - echo World    
@@ -32,12 +32,14 @@ Example configuration in your `.gitlab-ci.yml` file for multiple hosts using use
 ```diff
 pipeline:
   image: bitlogicos/gitlab-ssh
-  host:
-+  - foo.com
-+  - bar.com
-  username: root
-  password: 1234
-  port: 22
+  stage: deploy
+  variables:
+    SSH_HOST:
+  +  - foo.com
+  +  - bar.com
+    SSH_USERNAME: "root"
+    SSH_PASSWORD: 1234
+    SSH_PORT: 22
   script:
     - echo hello
     - echo world
@@ -49,11 +51,11 @@ Example configuration for command timeout (unit: second), default value is 60 se
 ```diff
 pipeline:
   image: bitlogicos/gitlab-ssh
-  host: foo.com
-  username: root
-  password: 1234
-  port: 22
-+ command_timeout: 10
+  stage: deploy
+  variables:
+    SSH_HOST: "foo.com"
+    SSH_USERNAME: "root"
+  + SSH_TIMEOUT: 10
   script:
     - echo hello
     - echo world
@@ -64,59 +66,57 @@ Example configuration for execute commands on a remote server using ｀SSHProxyC
 ```diff
 pipeline:
   image: bitlogicos/gitlab-ssh
-  host: foo.com
-  username: root
-  port: 22
-  key: ${DEPLOY_KEY}
+  stage: deploy
+  variables:
+    SSH_HOST: "foo.com"
+    SSH_USERNAME: "root"
+    SSH_PASSWORD: 1234
++   PROXY_SSH_HOST: 10.130.33.145
++   PROXY_SSH_USER: ubuntu
++   PROXY_SSH_PORT: 22
++   PROXY_SSH_KEY: ${PROXY_KEY}
   script:
     - echo hello
     - echo world
-+ proxy_host: 10.130.33.145
-+ proxy_user: ubuntu
-+ proxy_port: 22
-+ proxy_key: ${PROXY_KEY}
 ```
 
 
 # Parameter Reference
 
-host
+ssh_host
 : target hostname or IP
 
-port
+ssh_port
 : ssh port of target host
 
-username
+ssh_username
 : account for target host user
 
-password
+ssh_password
 : password for target host user
 
-key
+ssh_key
 : plain text of user private key
 
-key_path
+ssh_key_path
 : key path of user private key
 
-script
-: execute commands on a remote server
-
-timeout
+ssh_timeout
 : Timeout is the maximum amount of time for the TCP connection to establish.
 
-command_timeout
+ssh_command_timeout
 : Command timeout is the maximum amount of time for the execute commands, default is 60 secs.
 
-proxy_host
+proxy_ssh_host
 : proxy hostname or IP
 
-proxy_port
+proxy_ssh_port
 : ssh port of proxy host
 
-proxy_username
+proxy_ssh_username
 : account for proxy host user
 
-proxy_password
+proxy_ssh_password
 : password for proxy host user
 
 proxy_key
